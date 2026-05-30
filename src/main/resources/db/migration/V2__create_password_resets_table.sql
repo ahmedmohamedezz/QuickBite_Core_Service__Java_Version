@@ -1,6 +1,6 @@
 CREATE TABLE password_resets
 (
-    id          SERIAL PRIMARY KEY,
+    id          BIGSERIAL PRIMARY KEY,
     user_id     BIGINT    NOT NULL,
     otp_hash    TEXT      NOT NULL,
     created_at  TIMESTAMP NOT NULL,

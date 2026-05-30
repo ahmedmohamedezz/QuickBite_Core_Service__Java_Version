@@ -1,8 +1,7 @@
-package com.quickbite.core.user.dto;
+package com.quickbite.core.auth.dto;
 
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.enums.SystemRole;
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,10 +1,7 @@
-package com.quickbite.core.user.dto;
+package com.quickbite.core.auth.dto;
 
 import com.quickbite.core.user.enums.SystemRole;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,11 +21,11 @@ public class UserRegisterRequest {
 
     @NotBlank(message = "Password is required")
     @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&].{8,}$",
             message = "Password is not strong enough. It must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one symbol."
     )
     private String password;
 
-    @NotBlank(message = "Role is required")
+    @NotNull(message = "Role is required")
     private SystemRole role;
 }

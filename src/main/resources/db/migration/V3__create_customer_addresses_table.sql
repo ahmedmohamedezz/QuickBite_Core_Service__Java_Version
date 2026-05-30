@@ -1,8 +1,6 @@
-CREATE TYPE location_type AS ENUM ('office', 'home', 'public_place');
-
 CREATE TABLE customer_addresses
 (
-    id               SERIAL PRIMARY KEY,
+    id               BIGSERIAL PRIMARY KEY,
     user_id          BIGINT         NOT NULL,
     label            TEXT           NOT NULL,
     country          TEXT           NOT NULL,
@@ -10,7 +8,7 @@ CREATE TABLE customer_addresses
     street           TEXT           NOT NULL,
     building         TEXT,
     apartment_number TEXT,
-    type             location_type  NOT NULL,
+    type             TEXT           NOT NULL CHECK ( type in ('office', 'home', 'public_place') ),
     lat              DECIMAL(10, 7) NOT NULL,
     lng              DECIMAL(10, 7) NOT NULL,
     is_default       BOOLEAN        NOT NULL,
