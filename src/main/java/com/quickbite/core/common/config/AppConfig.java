@@ -1,13 +1,16 @@
 package com.quickbite.core.common.config;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties
+@ConfigurationProperties(prefix = "app")
 public record AppConfig(
-        int port,
+        int serverPort,
         DbConfig db,
-        JwtConfig jwt
+        JwtConfig jwt,
+        PasswordEncoder passwordEncoder
 ) {
     public record DbConfig(
             String host,
@@ -29,4 +32,8 @@ public record AppConfig(
             @NotBlank String refreshExpiresIn
     ) {
     }
+
+    public record PasswordEncoder(
+            @Min(4) @Max(31) int salt
+    ) {}
 }

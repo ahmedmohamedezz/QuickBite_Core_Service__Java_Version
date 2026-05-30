@@ -66,7 +66,8 @@ public class HealthController {
         response.put("jwt access expires", appConfig.jwt().accessExpiresIn());
         response.put("jwt refresh", appConfig.jwt().refreshSecret());
         response.put("jwt refresh expires", appConfig.jwt().refreshExpiresIn());
-        response.put("server port",  String.valueOf(appConfig.port()));
+        response.put("server port", String.valueOf(appConfig.serverPort()));
+        response.put("password encoder salt", String.valueOf(appConfig.passwordEncoder().salt()));
 
         return response;
     }
