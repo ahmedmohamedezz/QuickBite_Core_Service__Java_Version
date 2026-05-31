@@ -63,9 +63,9 @@ public class HealthController {
         response.put("db pool max", String.valueOf(appConfig.db().poolMax()));
         response.put("db pool min", String.valueOf(appConfig.db().poolMin()));
         response.put("jwt access", appConfig.jwt().accessSecret());
-        response.put("jwt access expires", appConfig.jwt().accessExpiresIn());
+        response.put("jwt access expires", String.valueOf(appConfig.jwt().accessExpiresIn()));
         response.put("jwt refresh", appConfig.jwt().refreshSecret());
-        response.put("jwt refresh expires", appConfig.jwt().refreshExpiresIn());
+        response.put("jwt refresh expires", String.valueOf(appConfig.jwt().refreshExpiresIn()));
         response.put("server port", String.valueOf(appConfig.serverPort()));
         response.put("password encoder salt", String.valueOf(appConfig.passwordEncoder().salt()));
 

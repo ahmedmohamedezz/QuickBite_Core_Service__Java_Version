@@ -27,8 +27,8 @@ public class JwtService {
         this.accessKey = Keys.hmacShaKeyFor(jwtConfig.accessSecret().getBytes(StandardCharsets.UTF_8));
         this.refreshKey = Keys.hmacShaKeyFor(jwtConfig.refreshSecret().getBytes(StandardCharsets.UTF_8));
 
-        this.accessExpirationMs = parseDurationToMillis(jwtConfig.accessExpiresIn());
-        this.refreshExpirationMs = parseDurationToMillis(jwtConfig.refreshExpiresIn());
+        this.accessExpirationMs = jwtConfig.accessExpiresIn();
+        this.refreshExpirationMs = jwtConfig.refreshExpiresIn();
     }
 
     public String generateAccessToken(Long userId, String email, String role) {
@@ -70,17 +70,5 @@ public class JwtService {
         } catch (JwtException | IllegalArgumentException e) {
             return null; // Token is invalid, expired, or tampered with
         }
-    }
-
-    private long parseDurationToMillis(String durationStr) {
-        // Fallback helper handling basic "m" (minutes) and "d" (days) if not using Spring's Duration converter directly
-        if (durationStr.endsWith("m")) {
-            return Duration.ofMinutes(Long.parseLong(durationStr.replace("m", ""))).toMillis();
-        } else if (durationStr.endsWith("d")) {
-            return Duration.ofDays(Long.parseLong(durationStr.replace("d", ""))).toMillis();
-        } else if (durationStr.endsWith("h")) {
-            return Duration.ofHours(Long.parseLong(durationStr.replace("h", ""))).toMillis();
-        }
-        return Long.parseLong(durationStr); // Assume milliseconds if raw numbers
     }
 }

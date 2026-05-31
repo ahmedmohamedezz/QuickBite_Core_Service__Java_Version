@@ -28,8 +28,8 @@ public record AppConfig(
     public record JwtConfig(
             @NotBlank String refreshSecret,
             @NotBlank String accessSecret,
-            @NotBlank String accessExpiresIn,
-            @NotBlank String refreshExpiresIn
+            @NotBlank long accessExpiresIn,
+            @NotBlank long refreshExpiresIn
     ) {
     }
 

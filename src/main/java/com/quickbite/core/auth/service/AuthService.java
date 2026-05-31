@@ -1,64 +1,69 @@
 package com.quickbite.core.auth.service;
 
+import com.quickbite.core.auth.AuthUtils;
+import com.quickbite.core.auth.domain.PasswordResetsEntity;
+import com.quickbite.core.auth.dto.*;
 import com.quickbite.core.auth.exception.CannotSignupAsSystemAdminException;
 import com.quickbite.core.auth.exception.UserAlreadyExistsException;
 import com.quickbite.core.auth.exception.InvalidCredentialsException;
+import com.quickbite.core.auth.repository.PasswordResetRepository;
 import com.quickbite.core.common.security.JwtService;
 import com.quickbite.core.user.domain.UserEntity;
-import com.quickbite.core.auth.dto.AuthResponse;
-import com.quickbite.core.auth.dto.UserLoginRequest;
-import com.quickbite.core.auth.dto.UserRegisterRequest;
-import com.quickbite.core.auth.dto.UserResponse;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final PasswordResetRepository passwordResetRepository;
+    private final AuthUtils authUtils;
 
-    public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       JwtService jwtService) {
+    public AuthService(
+            UserRepository userRepository,
+            PasswordResetRepository passwordResetRepository,
+            AuthUtils authUtils) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
+        this.passwordResetRepository = passwordResetRepository;
+        this.authUtils = authUtils;
     }
 
     @Transactional
-    public AuthResponse register(UserRegisterRequest request) {
+    public AuthResponse register(UserRegisterDto data) {
         // system admins are configured manually
-        if (request.getRole() == SystemRole.system_admin) {
+        if (data.getRole() == SystemRole.system_admin) {
             throw new CannotSignupAsSystemAdminException();
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(data.getEmail())) {
             throw new UserAlreadyExistsException();
         }
 
-        if (userRepository.existsByPhone(request.getPhone())) {
+        if (userRepository.existsByPhone(data.getPhone())) {
             throw new UserAlreadyExistsException();
         }
 
-        // 3. Build and hash user credentials
-        UserEntity user = new UserEntity();
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-        user.setName(request.getName());
-        user.setSystemRole(request.getRole());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        // Build and hash user credentials
+        UserEntity user = UserEntity.builder()
+                .email(data.getEmail())
+                .phone(data.getPhone())
+                .name(data.getName())
+                .systemRole(data.getRole())
+                .passwordHash(authUtils.hashPassword(data.getPassword()))
+                .build();
 
         UserEntity savedUser = userRepository.save(user);
 
-        // 4. Generate individual token signatures
-        String accessToken = jwtService.generateAccessToken(
+        // Generate individual token signatures
+        String accessToken = authUtils.generateAccessToken(
                 user.getId(), user.getEmail(), String.valueOf(user.getSystemRole()));
-        String refreshToken = jwtService.generateRefreshToken(
+        String refreshToken = authUtils.generateRefreshToken(
                 user.getId(), user.getEmail(), String.valueOf(user.getSystemRole()));
 
         return AuthResponse.builder()
@@ -70,20 +75,20 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public AuthResponse login(UserLoginRequest request) {
-        // 1. Find active user record
-        UserEntity user = userRepository.findActiveByEmail(request.getEmail())
+    public AuthResponse login(UserLoginDto data) {
+        // Find active user record
+        UserEntity user = userRepository.findActiveByEmail(data.getEmail())
                 .orElseThrow(InvalidCredentialsException::new);
 
-        // 2. Verify hashed password compatibility safely
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        // Verify hashed password compatibility safely
+        if (!authUtils.comparePassword(data.getPassword(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
 
-        // 3. Generate individual token signatures
-        String accessToken = jwtService.generateAccessToken(
+        // Generate individual token signatures
+        String accessToken = authUtils.generateAccessToken(
                 user.getId(), user.getEmail(), String.valueOf(user.getSystemRole()));
-        String refreshToken = jwtService.generateRefreshToken(
+        String refreshToken = authUtils.generateRefreshToken(
                 user.getId(), user.getEmail(), String.valueOf(user.getSystemRole()));
 
         return AuthResponse.builder()
@@ -92,5 +97,37 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .user(UserResponse.fromEntity(user))
                 .build();
+    }
+
+    public void forgetPassword(ForgetPasswordDto data) {
+        // find user or throw
+        Optional<UserEntity> result = userRepository.findActiveByEmail(data.getEmail());
+
+        if (result.isEmpty()) {
+            // for security consideration, to prevent brute force attacks to see if email exists
+            return;
+        }
+
+        UserEntity user = result.get();
+
+        // generate & hash otp
+        String otp = authUtils.generateOTP();
+        String otpHash = authUtils.hashOTP(otp);
+
+        // insert a new password reset
+        PasswordResetsEntity passwordReset = PasswordResetsEntity.builder()
+                .user(user)
+                .otpHash(otpHash)
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
+                .build();
+
+        passwordResetRepository.save(passwordReset);
+
+        // TODO: send otp to user via mail
+        System.out.println("Mock Mail OTP: " + otp);
+    }
+
+    public void resetPassword(ResetPasswordDto data) {
+        // TODO: complete reset password
     }
 }
