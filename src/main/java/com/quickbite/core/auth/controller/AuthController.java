@@ -27,14 +27,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody UserRegisterRequest request) {
-        logger.info("Register request received. email: " + request.getEmail());
         AuthResponse response = authService.register(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody UserLoginRequest request) {
-        logger.info("Login request received. email: " + request.getEmail());
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }

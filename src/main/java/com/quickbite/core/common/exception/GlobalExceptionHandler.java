@@ -28,34 +28,39 @@ public class GlobalExceptionHandler {
     // 1. Catch Validation Errors from JSON Request Bodies (@RequestBody)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
-        Map<String, String> validationErrors = new HashMap<>();
+        StringBuilder error = new StringBuilder();
 
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            validationErrors.put(fieldName, errorMessage);
+        ex.getBindingResult().getAllErrors().forEach((err) -> {
+            String fieldName = ((FieldError) err).getField();
+            String errorMessage = err.getDefaultMessage();
+            error.append(
+                    String.format("%s: %s", fieldName, errorMessage)
+            );
         });
 
-        logger.warn("Validation failed for request. Fields broken: {}", validationErrors.keySet());
+        logger.warn("Validation failed for request. Fields broken: {}", error.toString());
 
-        return buildResponse("Validation failed", HttpStatus.BAD_REQUEST, validationErrors);
+        return buildResponse("Validation failed", HttpStatus.BAD_REQUEST, error.toString());
     }
 
     // 2. Catch Validation Errors from URL Parameters / Query Strings (@PathVariable / @RequestParam)
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        Map<String, String> validationErrors = new HashMap<>();
+        StringBuilder error = new StringBuilder();
 
         ex.getConstraintViolations().forEach(violation -> {
             String propertyPath = violation.getPropertyPath().toString();
+
             // Optional: Extract only the last field name out of the path
             String fieldName = propertyPath.substring(propertyPath.lastIndexOf('.') + 1);
-            validationErrors.put(fieldName, violation.getMessage());
+            error.append(
+                    String.format("%s : %s", fieldName, violation.getMessage())
+            );
         });
 
-        logger.warn("Constraint violation triggered: {}", validationErrors.keySet());
+        logger.warn("Constraint violation triggered: {}", error.toString());
 
-        return buildResponse("Validation failed", HttpStatus.BAD_REQUEST, validationErrors);
+        return buildResponse("Validation failed", HttpStatus.BAD_REQUEST, error.toString());
     }
 
     // Handle unexpected system exceptions (Generic 500)
@@ -66,16 +71,15 @@ public class GlobalExceptionHandler {
     }
 
     // Unified helper method handling optional validation payload details
-    private ResponseEntity<ErrorResponse> buildResponse(String message, HttpStatus status, Map<String, String> errors) {
-        ErrorResponse error = new ErrorResponse(
+    private ResponseEntity<ErrorResponse> buildResponse(String message, HttpStatus status, String error) {
+        ErrorResponse errorResponse = new ErrorResponse(
                 message,
                 status.value(),
-                status.getReasonPhrase(),
+                error,
                 MDC.get(MDC_KEY),
-                LocalDateTime.now(),
-                errors
+                LocalDateTime.now()
         );
 
-        return new ResponseEntity<>(error, status);
+        return new ResponseEntity<>(errorResponse, status);
     }
 }

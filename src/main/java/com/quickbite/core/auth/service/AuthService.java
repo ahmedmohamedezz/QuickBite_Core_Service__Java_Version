@@ -62,6 +62,7 @@ public class AuthService {
                 user.getId(), user.getEmail(), String.valueOf(user.getSystemRole()));
 
         return AuthResponse.builder()
+                .message("Register successful")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .user(UserResponse.fromEntity(savedUser))
@@ -86,6 +87,7 @@ public class AuthService {
                 user.getId(), user.getEmail(), String.valueOf(user.getSystemRole()));
 
         return AuthResponse.builder()
+                .message("Login successful")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .user(UserResponse.fromEntity(user))

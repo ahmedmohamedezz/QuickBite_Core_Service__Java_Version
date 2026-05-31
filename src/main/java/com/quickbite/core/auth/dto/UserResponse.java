@@ -15,6 +15,7 @@ public class UserResponse {
     private String phone;
     private String name;
     private SystemRole systemRole;
+    private LocalDateTime createdAt;
 
     public static UserResponse fromEntity(UserEntity entity) {
         if (entity == null) return null;
@@ -25,6 +26,7 @@ public class UserResponse {
                 .phone(entity.getPhone())
                 .name(entity.getName())
                 .systemRole(entity.getSystemRole())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }

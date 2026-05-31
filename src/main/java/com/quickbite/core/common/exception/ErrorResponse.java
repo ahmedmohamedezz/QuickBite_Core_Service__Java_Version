@@ -8,10 +8,6 @@ public record ErrorResponse(
         int status,
         String error,
         String correlationId,
-        LocalDateTime timestamp,
-        Map<String, String> errors
+        LocalDateTime timestamp
 ) {
-    public ErrorResponse(String message, int status, String error, String correlationId, LocalDateTime timestamp) {
-        this(message, status, error, correlationId, timestamp, null);
-    }
 }
