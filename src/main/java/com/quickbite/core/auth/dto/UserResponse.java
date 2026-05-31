@@ -14,11 +14,7 @@ public class UserResponse {
     private String email;
     private String phone;
     private String name;
-    private String passwordHash;
     private SystemRole systemRole;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
     public static UserResponse fromEntity(UserEntity entity) {
         if (entity == null) return null;
@@ -28,11 +24,7 @@ public class UserResponse {
                 .email(entity.getEmail())
                 .phone(entity.getPhone())
                 .name(entity.getName())
-                .passwordHash(entity.getPasswordHash())
                 .systemRole(entity.getSystemRole())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .deletedAt(entity.getDeletedAt())
                 .build();
     }
 }
