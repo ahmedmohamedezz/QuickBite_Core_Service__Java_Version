@@ -1,17 +1,16 @@
 package com.quickbite.core.auth.service;
 
 import com.quickbite.core.auth.AuthUtils;
-import com.quickbite.core.auth.domain.PasswordResetsEntity;
+import com.quickbite.core.auth.domain.PasswordResetEntity;
 import com.quickbite.core.auth.dto.*;
 import com.quickbite.core.auth.exception.CannotSignupAsSystemAdminException;
+import com.quickbite.core.auth.exception.InvalidOTPException;
 import com.quickbite.core.auth.exception.UserAlreadyExistsException;
 import com.quickbite.core.auth.exception.InvalidCredentialsException;
 import com.quickbite.core.auth.repository.PasswordResetRepository;
-import com.quickbite.core.common.security.JwtService;
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,7 +103,7 @@ public class AuthService {
         Optional<UserEntity> result = userRepository.findActiveByEmail(data.getEmail());
 
         if (result.isEmpty()) {
-            // for security consideration, to prevent brute force attacks to see if email exists
+            // for security consideration, to prevent enumeration attacks
             return;
         }
 
@@ -114,20 +113,29 @@ public class AuthService {
         String otp = authUtils.generateOTP();
         String otpHash = authUtils.hashOTP(otp);
 
-        // insert a new password reset
-        PasswordResetsEntity passwordReset = PasswordResetsEntity.builder()
-                .user(user)
-                .otpHash(otpHash)
-                .expiresAt(LocalDateTime.now().plusMinutes(10))
-                .build();
-
-        passwordResetRepository.save(passwordReset);
+        passwordResetRepository.createOTP(user.getId(), otpHash);
 
         // TODO: send otp to user via mail
         System.out.println("Mock Mail OTP: " + otp);
     }
 
+    @Transactional
     public void resetPassword(ResetPasswordDto data) {
-        // TODO: complete reset password
+        UserEntity user = userRepository.findActiveByEmail(data.getEmail())
+                .orElseThrow(InvalidOTPException::new);
+
+        PasswordResetEntity passwordReset =
+                passwordResetRepository
+                        .findFirstByUserIdAndConsumedAtIsNullOrderByCreatedAtDesc(user.getId())
+                        .orElseThrow(InvalidOTPException::new);
+
+        String otpHash = authUtils.hashOTP(data.getOtp());
+
+        if (!passwordReset.getOtpHash().equals(otpHash) || passwordReset.isExpired()) {
+            throw new InvalidOTPException();
+        }
+
+        passwordResetRepository.updateConsumedAt(passwordReset.getId());
+        userRepository.updatePassword(user.getId(), authUtils.hashPassword(data.getNewPassword()));
     }
 }

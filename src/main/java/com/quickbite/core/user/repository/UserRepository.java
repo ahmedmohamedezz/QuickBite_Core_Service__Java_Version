@@ -2,6 +2,7 @@ package com.quickbite.core.user.repository;
 
 import com.quickbite.core.user.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("SELECT u FROM UserEntity u WHERE u.email = :email AND u.deletedAt IS null")
     Optional<UserEntity> findActiveByEmail(@Param("email") String email);
+
+    @Modifying
+    @Query("UPDATE UserEntity u SET u.passwordHash = :passwordHash WHERE u.id = :id")
+    void updatePassword(@Param("id") Long id, @Param("passwordHash") String passwordHash);
 }

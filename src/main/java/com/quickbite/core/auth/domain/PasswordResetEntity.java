@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordResetsEntity {
+public class PasswordResetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,4 +43,8 @@ public class PasswordResetsEntity {
 
     @Column(name = "consumed_at")
     private LocalDateTime consumedAt;
+
+    public boolean isExpired() {
+        return expiresAt.isBefore(LocalDateTime.now());
+    }
 }

@@ -3,7 +3,7 @@ CREATE TABLE password_resets
     id          BIGSERIAL PRIMARY KEY,
     user_id     BIGINT    NOT NULL,
     otp_hash    TEXT      NOT NULL,
-    created_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
     expires_at  TIMESTAMP NOT NULL,
     consumed_at TIMESTAMP,
 

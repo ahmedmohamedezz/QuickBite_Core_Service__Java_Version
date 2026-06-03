@@ -1,9 +1,6 @@
 package com.quickbite.core.auth.controller;
 
-import com.quickbite.core.auth.dto.AuthResponse;
-import com.quickbite.core.auth.dto.ForgetPasswordDto;
-import com.quickbite.core.auth.dto.UserLoginDto;
-import com.quickbite.core.auth.dto.UserRegisterDto;
+import com.quickbite.core.auth.dto.*;
 import com.quickbite.core.auth.service.AuthService;
 import com.quickbite.core.common.dto.ApiResponse;
 import jakarta.validation.Valid;
@@ -43,5 +40,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse> forgetPassword(@Valid @RequestBody ForgetPasswordDto request) {
         authService.forgetPassword(request);
         return ResponseEntity.ok(new ApiResponse("Email Sent with OTP"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody ResetPasswordDto request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(new ApiResponse("Password reset successfully, please login again"));
     }
 }

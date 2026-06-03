@@ -3,12 +3,14 @@ package com.quickbite.core.auth.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResetPasswordDto {
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
