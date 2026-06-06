@@ -9,12 +9,12 @@ import com.quickbite.core.auth.exception.UserAlreadyExistsException;
 import com.quickbite.core.auth.exception.InvalidCredentialsException;
 import com.quickbite.core.auth.repository.PasswordResetRepository;
 import com.quickbite.core.user.domain.UserEntity;
+import com.quickbite.core.user.dto.UserResponse;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -135,7 +135,7 @@ public class AuthService {
             throw new InvalidOTPException();
         }
 
-        passwordResetRepository.updateConsumedAt(passwordReset.getId());
         userRepository.updatePassword(user.getId(), authUtils.hashPassword(data.getNewPassword()));
+        passwordResetRepository.updateConsumedAt(passwordReset.getId());
     }
 }

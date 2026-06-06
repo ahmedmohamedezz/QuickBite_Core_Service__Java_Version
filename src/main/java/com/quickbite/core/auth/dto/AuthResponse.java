@@ -1,5 +1,6 @@
 package com.quickbite.core.auth.dto;
 
+import com.quickbite.core.user.dto.UserResponse;
 import lombok.Builder;
 import lombok.Getter;
 

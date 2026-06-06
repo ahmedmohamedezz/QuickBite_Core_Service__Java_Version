@@ -1,6 +1,7 @@
 package com.quickbite.core.common.filter;
 
 import com.quickbite.core.common.security.JwtService;
+import com.quickbite.core.common.security.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,10 +24,12 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -42,18 +46,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            logger.info("Auth header found, validating request");
             String token = authHeader.substring(7);
+            logger.info("Auth header found, validating request.\n token: {}", token);
+
             Claims claims = jwtService.validateAndExtractAccessClaims(token);
 
             if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                String userId = claims.getSubject();
                 String role = claims.get("role", String.class);
+                String email = claims.get("email", String.class);
+
+                logger.info("Got user {}", email);
 
                 // Build Spring's internal authentication identity representation
+                UserPrincipal user = (UserPrincipal) userDetailsService.loadUserByUsername(email);
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userId, // Principal (can be accessed via authentication.getPrincipal())
+                        user, // Principal (can be accessed via authentication.getPrincipal())
                         null,
                         List.of(authority)
                 );

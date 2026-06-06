@@ -1,21 +1,21 @@
 package com.quickbite.core.common.security;
 
 import com.quickbite.core.common.config.AppConfig;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 
 @Service
 public class JwtService {
 
+    private final Logger logger = LoggerFactory.getLogger(JwtService.class);
     private final SecretKey accessKey;
     private final SecretKey refreshKey;
     private final long accessExpirationMs;
@@ -61,14 +61,24 @@ public class JwtService {
     }
 
     private Claims validateAndExtract(String token, SecretKey key) {
+        Claims claims = null;
         try {
-            return Jwts.parser()
+            claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-        } catch (JwtException | IllegalArgumentException e) {
-            return null; // Token is invalid, expired, or tampered with
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (Exception e) {
+            // This is likely what you have right now, but missing the ', e' at the end to print the trace
+            logger.error("Failed to set user authentication in security context", e);
         }
+
+        return claims;
     }
 }

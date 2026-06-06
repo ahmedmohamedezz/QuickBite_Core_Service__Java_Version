@@ -29,22 +29,19 @@ import java.security.SecureRandom;
 @EnableMethodSecurity // activates @PreAuthorize
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserRepository userRepository;
     private final AppConfig appConfig;
 
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
             UserRepository userRepository,
             AppConfig appConfig
     ) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userRepository = userRepository;
         this.appConfig = appConfig;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 // 1. Disable stateful web vectors since we use stateless JWTs
                 .csrf(AbstractHttpConfigurer::disable)

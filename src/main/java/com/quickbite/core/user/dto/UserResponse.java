@@ -1,4 +1,4 @@
-package com.quickbite.core.auth.dto;
+package com.quickbite.core.user.dto;
 
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.enums.SystemRole;
