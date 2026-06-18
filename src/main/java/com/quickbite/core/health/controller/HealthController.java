@@ -1,6 +1,7 @@
 package com.quickbite.core.health.controller;
 
 import com.quickbite.core.common.config.AppConfig;
+import com.quickbite.core.common.enums.AppEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +64,12 @@ public class HealthController {
         response.put("db pool max", String.valueOf(appConfig.db().poolMax()));
         response.put("db pool min", String.valueOf(appConfig.db().poolMin()));
         response.put("jwt access", appConfig.jwt().accessSecret());
-        response.put("jwt access expires", String.valueOf(appConfig.jwt().accessExpiresIn()));
+        response.put("jwt access expires", String.valueOf(appConfig.jwt().accessExpiresInMs()));
         response.put("jwt refresh", appConfig.jwt().refreshSecret());
-        response.put("jwt refresh expires", String.valueOf(appConfig.jwt().refreshExpiresIn()));
+        response.put("jwt refresh expires", String.valueOf(appConfig.jwt().refreshExpiresInMs()));
         response.put("password encoder salt", String.valueOf(appConfig.passwordEncoder().salt()));
         response.put("server port", String.valueOf(appConfig.serverPort()));
-        response.put("environment", appConfig.environment());
+        response.put("environment", appConfig.environment().getValue());
 
         return response;
     }

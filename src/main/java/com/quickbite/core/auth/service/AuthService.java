@@ -1,6 +1,6 @@
 package com.quickbite.core.auth.service;
 
-import com.quickbite.core.auth.AuthUtils;
+import com.quickbite.core.auth.utils.AuthUtils;
 import com.quickbite.core.auth.domain.PasswordResetEntity;
 import com.quickbite.core.auth.dto.*;
 import com.quickbite.core.auth.exception.CannotSignupAsSystemAdminException;

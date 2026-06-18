@@ -1,5 +1,6 @@
 package com.quickbite.core.common.config;
 
+import com.quickbite.core.common.enums.AppEnvironment;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app")
 public record AppConfig(
         int serverPort,
-        String environment,
+        AppEnvironment environment,
         DbConfig db,
         JwtConfig jwt,
         PasswordEncoder passwordEncoder
@@ -29,8 +30,8 @@ public record AppConfig(
     public record JwtConfig(
             @NotBlank String refreshSecret,
             @NotBlank String accessSecret,
-            @NotBlank long accessExpiresIn,
-            @NotBlank long refreshExpiresIn
+            @NotBlank long accessExpiresInMs,
+            @NotBlank long refreshExpiresInMs
     ) {
     }
 

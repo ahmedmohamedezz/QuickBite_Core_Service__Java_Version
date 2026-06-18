@@ -1,4 +1,4 @@
-package com.quickbite.core.auth;
+package com.quickbite.core.auth.utils;
 
 import com.quickbite.core.auth.dto.JwtPayload;
 import com.quickbite.core.common.security.JwtService;

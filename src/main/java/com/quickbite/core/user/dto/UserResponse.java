@@ -4,16 +4,19 @@ import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.enums.SystemRole;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 public class UserResponse {
     private Long id;
     private String email;
     private String phone;
     private String name;
+    private String message;
     private SystemRole systemRole;
     private LocalDateTime createdAt;
 
