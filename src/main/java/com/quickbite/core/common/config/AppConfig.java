@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app")
 public record AppConfig(
         int serverPort,
+        String environment,
         DbConfig db,
         JwtConfig jwt,
         PasswordEncoder passwordEncoder
