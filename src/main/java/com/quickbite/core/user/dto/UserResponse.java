@@ -1,35 +1,15 @@
 package com.quickbite.core.user.dto;
 
-import com.quickbite.core.user.domain.UserEntity;
-import com.quickbite.core.user.enums.SystemRole;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
-    private Long id;
-    private String email;
-    private String phone;
-    private String name;
     private String message;
-    private SystemRole systemRole;
-    private LocalDateTime createdAt;
-
-    public static UserResponse fromEntity(UserEntity entity) {
-        if (entity == null) return null;
-
-        return UserResponse.builder()
-                .id(entity.getId())
-                .email(entity.getEmail())
-                .phone(entity.getPhone())
-                .name(entity.getName())
-                .systemRole(entity.getSystemRole())
-                .createdAt(entity.getCreatedAt())
-                .build();
-    }
+    private UserDto user;
 }

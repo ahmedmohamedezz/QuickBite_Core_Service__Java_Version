@@ -9,6 +9,7 @@ import com.quickbite.core.auth.exception.UserAlreadyExistsException;
 import com.quickbite.core.auth.exception.InvalidCredentialsException;
 import com.quickbite.core.auth.repository.PasswordResetRepository;
 import com.quickbite.core.user.domain.UserEntity;
+import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.dto.UserResponse;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.repository.UserRepository;
@@ -69,7 +70,7 @@ public class AuthService {
                 .message("Register successful")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .user(UserResponse.fromEntity(savedUser))
+                .user(UserDto.fromEntity(savedUser))
                 .build();
     }
 
@@ -94,7 +95,7 @@ public class AuthService {
                 .message("Login successful")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .user(UserResponse.fromEntity(user))
+                .user(UserDto.fromEntity(user))
                 .build();
     }
 
