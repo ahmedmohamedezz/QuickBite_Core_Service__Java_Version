@@ -98,6 +98,7 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional
     public void forgetPassword(ForgetPasswordDto data) {
         // find user or throw
         Optional<UserEntity> result = userRepository.findActiveByEmail(data.getEmail());
@@ -137,5 +138,10 @@ public class AuthService {
 
         userRepository.updatePassword(user.getId(), authUtils.hashPassword(data.getNewPassword()));
         passwordResetRepository.updateConsumedAt(passwordReset.getId());
+    }
+
+    public String refreshToken(String refreshToken) {
+        JwtPayload payload = authUtils.verifyRefreshToken(refreshToken);
+        return authUtils.generateAccessToken(payload.userId(), payload.email(), payload.role());
     }
 }
