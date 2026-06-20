@@ -42,18 +42,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // get token from cookies
-        String accessToken = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        String accessToken = (cookies != null) ? Arrays.stream(cookies)
                 .filter(c -> appConfig.cookies().accessTokenName().equals(c.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
-                .orElse(null);
-
-        // skip request
-        if (accessToken == null) {
-            logger.info("Skipping jwt filter, access token not found");
-            filterChain.doFilter(request, response);
-            return;
-        }
+                .orElse(null) : null;
 
         try {
             logger.info("Auth header found, validating request.");
@@ -87,5 +81,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/auth") || path.startsWith("/health");
     }
 }
