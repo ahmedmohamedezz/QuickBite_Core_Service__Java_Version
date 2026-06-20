@@ -1,10 +1,12 @@
 package com.quickbite.core.common.filter;
 
-import com.quickbite.core.common.security.JwtService;
+import com.quickbite.core.auth.dto.JwtPayload;
+import com.quickbite.core.auth.utils.AuthUtils;
+import com.quickbite.core.common.config.AppConfig;
 import com.quickbite.core.common.security.UserPrincipal;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -18,17 +20,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final AuthUtils authUtils;
+    private final AppConfig appConfig;
     private final UserDetailsService userDetailsService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
+    public JwtAuthenticationFilter(AuthUtils authUtils, AppConfig appConfig, UserDetailsService userDetailsService) {
+        this.authUtils = authUtils;
+        this.appConfig = appConfig;
         this.userDetailsService = userDetailsService;
     }
 
@@ -36,26 +41,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        // get token from cookies
+        String accessToken = Arrays.stream(request.getCookies())
+                .filter(c -> appConfig.cookies().accessTokenName().equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
 
         // skip request
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.info("Skipping jwt filter, auth header not found");
+        if (accessToken == null) {
+            logger.info("Skipping jwt filter, access token not found");
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            String token = authHeader.substring(7);
-            logger.info("Auth header found, validating request.\n token: {}", token);
+            logger.info("Auth header found, validating request.");
 
-            Claims claims = jwtService.validateAndExtractAccessClaims(token);
+            JwtPayload payload = authUtils.verifyAccessToken(accessToken);
 
-            if (claims != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                String role = claims.get("role", String.class);
-                String email = claims.get("email", String.class);
+            if (payload != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String role = payload.role();
+                String email = payload.email();
 
-                logger.info("Got user {}", email);
+                logger.info("Got user {}, with email {}", payload.userId(), payload.email());
 
                 // Build Spring's internal authentication identity representation
                 UserPrincipal user = (UserPrincipal) userDetailsService.loadUserByUsername(email);

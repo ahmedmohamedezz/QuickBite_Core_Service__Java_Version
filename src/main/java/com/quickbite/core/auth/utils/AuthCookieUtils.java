@@ -21,19 +21,21 @@ public class AuthCookieUtils {
     private ResponseCookie createHttpOnlyCookie(String name, String value, long maxAgeSeconds, String path) {
         return ResponseCookie.from(name, value)
                 .httpOnly(true)
-                .secure(appConfig.environment() == AppEnvironment.PRODUCTION)
+                .secure(appConfig.environment() == AppEnvironment.PRODUCTION) // protect from XSS
                 .maxAge(maxAgeSeconds)
+                .sameSite("Lax")    // protect from CSRF
                 .path(path)
                 .build();
     }
 
     public ResponseCookie createAccessTokenCookie(String token) {
         long maxAgeSeconds = appConfig.jwt().accessExpiresInMs() / 1000;
-        return createHttpOnlyCookie("accessToken", token, maxAgeSeconds, "/");
+        return createHttpOnlyCookie(appConfig.cookies().accessTokenName(), token, maxAgeSeconds, "/");
     }
 
     public ResponseCookie createRefreshTokenCookie(String token) {
         long maxAgeSeconds = appConfig.jwt().refreshExpiresInMs() / 1000;
-        return createHttpOnlyCookie("refreshToken", token, maxAgeSeconds, "/api/auth/refresh");
+        return createHttpOnlyCookie(appConfig.cookies().refreshTokenName(), token, maxAgeSeconds,
+                "/api/auth/refresh");
     }
 }

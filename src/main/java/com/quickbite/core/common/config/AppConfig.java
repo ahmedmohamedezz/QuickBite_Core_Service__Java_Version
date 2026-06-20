@@ -12,7 +12,8 @@ public record AppConfig(
         AppEnvironment environment,
         DbConfig db,
         JwtConfig jwt,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        Cookies cookies
 ) {
     public record DbConfig(
             String host,
@@ -37,5 +38,10 @@ public record AppConfig(
 
     public record PasswordEncoder(
             @Min(4) @Max(31) int salt
+    ) {}
+
+    public record Cookies (
+            String accessTokenName,
+            String refreshTokenName
     ) {}
 }

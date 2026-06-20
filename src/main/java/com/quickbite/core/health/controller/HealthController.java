@@ -70,6 +70,8 @@ public class HealthController {
         response.put("password encoder salt", String.valueOf(appConfig.passwordEncoder().salt()));
         response.put("server port", String.valueOf(appConfig.serverPort()));
         response.put("environment", appConfig.environment().getValue());
+        response.put("cookies - access token", appConfig.cookies().accessTokenName());
+        response.put("cookies - refresh token", appConfig.cookies().refreshTokenName());
 
         return response;
     }
