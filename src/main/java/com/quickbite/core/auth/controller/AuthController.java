@@ -32,12 +32,12 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterDto request) {
         AuthResponse data = authService.register(request);
         UserResponse response = UserResponse.builder()
-                .user(data.getUser())
-                .message(data.getMessage())
+                .user(data.user())
+                .message(data.message())
                 .build();
 
-        ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(data.getAccessToken());
-        ResponseCookie refreshTokenCookie = authCookieUtils.createRefreshTokenCookie(data.getRefreshToken());
+        ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(data.accessToken());
+        ResponseCookie refreshTokenCookie = authCookieUtils.createRefreshTokenCookie(data.refreshToken());
 
         return ResponseEntity
                 .ok()
@@ -50,12 +50,12 @@ public class AuthController {
     public ResponseEntity<UserResponse> login(@Valid @RequestBody UserLoginDto request) {
         AuthResponse data = authService.login(request);
         UserResponse response = UserResponse.builder()
-                .message(data.getMessage())
-                .user(data.getUser())
+                .message(data.message())
+                .user(data.user())
                 .build();
 
-        ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(data.getAccessToken());
-        ResponseCookie refreshTokenCookie = authCookieUtils.createRefreshTokenCookie(data.getRefreshToken());
+        ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(data.accessToken());
+        ResponseCookie refreshTokenCookie = authCookieUtils.createRefreshTokenCookie(data.refreshToken());
 
         return ResponseEntity
                 .ok()

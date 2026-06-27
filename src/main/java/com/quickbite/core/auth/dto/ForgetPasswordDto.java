@@ -2,15 +2,12 @@ package com.quickbite.core.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ForgetPasswordDto {
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    private String email;
+public record ForgetPasswordDto(
+        @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format")
+        String email
+) {
 }

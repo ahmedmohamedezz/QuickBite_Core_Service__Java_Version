@@ -4,26 +4,26 @@ import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.dto.UserResponse;
 import com.quickbite.core.user.exception.UserNotFoundException;
+import com.quickbite.core.user.mapper.UserMapper;
 import com.quickbite.core.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
     public UserDto getByUserId(Long userId) {
         UserEntity user =
                 userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        return UserDto.fromEntity(user);
+        return userMapper.toDto(user);
     }
 
     @Transactional
@@ -44,7 +44,7 @@ public class UserService {
         UserEntity updatedUser = userRepository.save(user);
         return UserResponse.builder()
                 .message("Profile updated")
-                .user(UserDto.fromEntity(updatedUser))
+                .user(userMapper.toDto(updatedUser))
                 .build();
     }
 
