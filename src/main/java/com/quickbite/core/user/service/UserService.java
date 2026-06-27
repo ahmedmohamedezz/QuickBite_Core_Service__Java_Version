@@ -47,4 +47,8 @@ public class UserService {
                 .user(UserDto.fromEntity(updatedUser))
                 .build();
     }
+
+    public UserEntity getUserProxy(Long userId) {
+        return userRepository.getReferenceById(userId);
+    }
 }

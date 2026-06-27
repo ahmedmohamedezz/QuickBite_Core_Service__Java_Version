@@ -101,7 +101,6 @@ public class AuthService {
 
     @Transactional
     public void forgetPassword(ForgetPasswordDto data) {
-        // find user or throw
         Optional<UserEntity> result = userRepository.findActiveByEmail(data.getEmail());
 
         if (result.isEmpty()) {

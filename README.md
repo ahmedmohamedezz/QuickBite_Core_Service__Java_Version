@@ -172,3 +172,20 @@ private ResponseCookie createHttpOnlyCookie(String name, String value, long maxA
             .build();
 }
 ```
+---
+
+- Promoting security considerations in code
+  - avoiding exposing data in enumeration attacks
+
+```java
+@Transactional
+public void forgetPassword(ForgetPasswordDto data) {
+  // find user or throw
+  Optional<UserEntity> result = userRepository.findActiveByEmail(data.getEmail());
+
+  if (result.isEmpty()) {
+    // for security consideration, to prevent enumeration attacks
+    return;
+  }
+}
+```
