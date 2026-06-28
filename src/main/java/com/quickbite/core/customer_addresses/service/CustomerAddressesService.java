@@ -27,14 +27,19 @@ public class CustomerAddressesService {
     }
 
     @Transactional
-    public CustomerAddressResponse addCustomerAddress(Long userId, CustomerAddressDto address) {
-        CustomerAddressEntity entity = addressMapper.toEntity(address);
+    public CustomerAddressResponse addCustomerAddress(Long userId, CustomerAddressDto addressDto) {
+        CustomerAddressEntity newAddress = addressMapper.toEntity(addressDto);
 
         // get user proxy without hitting the db
         UserEntity userProxy = userService.getUserProxy(userId);
-        entity.setUser(userProxy);
+        newAddress.setUser(userProxy);
 
-        CustomerAddressEntity saved = customerAddressesRepository.save(entity);
+        // in-validate other addresses if this is the new default
+        if (Boolean.TRUE.equals(addressDto.isDefault())) {
+            customerAddressesRepository.unsetCurrentDefaultAddress(userId);
+        }
+
+        CustomerAddressEntity saved = customerAddressesRepository.save(newAddress);
 
         return CustomerAddressResponse.builder()
                 .message("Address added")
@@ -50,7 +55,7 @@ public class CustomerAddressesService {
                 .findByUser_IdAndId(userId, addressId)
                 .orElseThrow(CustomerAddressNotFoundException::new);
 
-        // if default address override
+        // in-validate other addresses if this is the new default
         if (Boolean.TRUE.equals(address.isDefault())) {
             customerAddressesRepository.unsetCurrentDefaultAddress(userId);
         }
