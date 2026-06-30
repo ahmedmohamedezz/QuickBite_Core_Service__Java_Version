@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.quickbite.core.customer_addresses.enums.AddressType;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 

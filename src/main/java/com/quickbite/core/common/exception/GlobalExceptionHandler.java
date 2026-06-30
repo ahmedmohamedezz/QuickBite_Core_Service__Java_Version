@@ -1,17 +1,20 @@
 package com.quickbite.core.common.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import tools.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -66,6 +69,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         logger.error("Unhandled system exception encountered: ", ex);
         return buildResponse("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, null);
+    }
+
+    // DTO validation errors
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidEnum(HttpMessageNotReadableException ex) {
+        String message = "Invalid value provided for the required field.";
+
+        // Optional: Check if the cause is an invalid enum value
+        if (ex.getCause() instanceof InvalidFormatException) {
+            var ife = (InvalidFormatException) ex.getCause();
+            if (ife.getTargetType().isEnum()) {
+                message = String.format("Invalid value '%s'. Accepted values are: %s",
+                        ife.getValue(),
+                        Arrays.toString(ife.getTargetType().getEnumConstants()));
+            }
+        }
+
+        return buildResponse(message, HttpStatus.BAD_REQUEST, String.valueOf(ex));
     }
 
     // Unified helper method handling optional validation payload details
