@@ -1,6 +1,8 @@
 package com.quickbite.core.auth.dto;
 
+import com.quickbite.core.restaurant.dto.RestaurantRegisterDto;
 import com.quickbite.core.user.enums.SystemRole;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 public record UserRegisterDto(
@@ -23,6 +25,8 @@ public record UserRegisterDto(
         String password,
 
         @NotNull(message = "Role is required")
-        SystemRole role
+        SystemRole role,
+        @Valid
+        RestaurantRegisterDto restaurant
 ) {
 }
