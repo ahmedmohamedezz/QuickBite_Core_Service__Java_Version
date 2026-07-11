@@ -1,6 +1,7 @@
 package com.quickbite.core.common.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,12 @@ public class GlobalExceptionHandler {
         }
 
         return buildResponse(message, HttpStatus.BAD_REQUEST, String.valueOf(ex));
+    }
+
+    // Thrown by @preAuthorize
+    @ExceptionHandler(AccessDeniedException.class)
+    private ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN, "You are not authorized to perform this action.");
     }
 
     // Unified helper method handling optional validation payload details

@@ -5,7 +5,7 @@ import com.quickbite.core.user.enums.SystemRole;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
-public record UserRegisterDto(
+public record RestaurantOwnerDto(
         @NotBlank(message = "Name is required")
         String name,
 
@@ -22,12 +22,6 @@ public record UserRegisterDto(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&].{8,}$",
                 message = "Password is not strong enough. It must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one symbol."
         )
-        String password,
-
-        @NotNull(message = "Role is required")
-        SystemRole role,
-
-        @Valid
-        RestaurantRegisterDto restaurant
+        String password
 ) {
 }

@@ -1,6 +1,7 @@
 package com.quickbite.core.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.quickbite.core.restaurant.dto.RestaurantDto;
 import com.quickbite.core.user.dto.UserDto;
 import lombok.Builder;
 
@@ -10,6 +11,7 @@ public record AuthResponse(
         String message,
         String accessToken,
         String refreshToken,
-        UserDto user
+        UserDto user,
+        RestaurantDto restaurant
 ) {
 }

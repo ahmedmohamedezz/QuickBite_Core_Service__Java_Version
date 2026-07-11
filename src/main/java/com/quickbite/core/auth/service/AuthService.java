@@ -8,6 +8,9 @@ import com.quickbite.core.auth.exception.InvalidOTPException;
 import com.quickbite.core.auth.exception.UserAlreadyExistsException;
 import com.quickbite.core.auth.exception.InvalidCredentialsException;
 import com.quickbite.core.auth.repository.PasswordResetRepository;
+import com.quickbite.core.restaurant.dto.RestaurantDto;
+import com.quickbite.core.restaurant.exception.RestaurantDataRequiredException;
+import com.quickbite.core.restaurant.service.RestaurantService;
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.mapper.UserMapper;
@@ -26,6 +29,7 @@ public class AuthService {
     private final PasswordResetRepository passwordResetRepository;
     private final UserMapper userMapper;
     private final AuthUtils authUtils;
+    private final RestaurantService restaurantService;
 
     @Transactional
     public AuthResponse register(UserRegisterDto data) {
@@ -52,6 +56,17 @@ public class AuthService {
                 .build();
 
         UserEntity savedUser = userRepository.save(user);
+        RestaurantDto restaurantDto = null;
+        // create restaurant if present
+        if (data.role().equals(SystemRole.restaurant_user)) {
+
+            if (data.restaurant() == null) {
+                throw new RestaurantDataRequiredException();
+            }
+
+            restaurantDto = restaurantService.create(savedUser.getId(), data.restaurant());
+        }
+
 
         // Generate individual token signatures
         String accessToken = authUtils.generateAccessToken(
@@ -64,6 +79,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .user(userMapper.toDto(savedUser))
+                .restaurant(restaurantDto)
                 .build();
     }
 

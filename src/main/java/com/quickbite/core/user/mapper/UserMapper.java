@@ -1,5 +1,6 @@
 package com.quickbite.core.user.mapper;
 
+import com.quickbite.core.auth.dto.RestaurantOwnerDto;
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.dto.UserDto;
 import org.mapstruct.Mapper;
@@ -11,4 +12,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     UserEntity toEntity(UserDto userDto);
+
+    @Mapping(target = "passwordHash", source = "password")
+    UserEntity fromRestaurantOwner(RestaurantOwnerDto restaurantOwnerDto);
 }

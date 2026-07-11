@@ -13,7 +13,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,6 +33,7 @@ public class AuthController {
         UserResponse response = UserResponse.builder()
                 .user(data.user())
                 .message(data.message())
+                .restaurant(data.restaurant())
                 .build();
 
         ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(data.accessToken());

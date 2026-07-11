@@ -1,0 +1,1 @@
+CREATE TYPE currency as ENUM ('EGP', 'SAR');

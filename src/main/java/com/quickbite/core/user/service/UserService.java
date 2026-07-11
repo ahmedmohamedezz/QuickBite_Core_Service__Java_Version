@@ -1,8 +1,11 @@
 package com.quickbite.core.user.service;
 
+import com.quickbite.core.auth.dto.RestaurantOwnerDto;
+import com.quickbite.core.auth.dto.UserRegisterDto;
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.dto.UserResponse;
+import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.exception.UserNotFoundException;
 import com.quickbite.core.user.mapper.UserMapper;
 import com.quickbite.core.user.repository.UserRepository;
@@ -50,5 +53,14 @@ public class UserService {
 
     public UserEntity getUserProxy(Long userId) {
         return userRepository.getReferenceById(userId);
+    }
+
+    @Transactional
+    public UserDto createRestaurantOwner(RestaurantOwnerDto restaurantOwner) {
+        UserEntity user = userMapper.fromRestaurantOwner(restaurantOwner);
+        user.setSystemRole(SystemRole.restaurant_user);
+
+        UserEntity savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 }
