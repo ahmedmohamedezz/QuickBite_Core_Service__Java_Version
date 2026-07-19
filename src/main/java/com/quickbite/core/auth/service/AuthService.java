@@ -57,7 +57,7 @@ public class AuthService {
 
         UserEntity savedUser = userRepository.save(user);
         RestaurantDto restaurantDto = null;
-        // create restaurant if present
+        // create restaurant_id if present
         if (data.role().equals(SystemRole.restaurant_user)) {
 
             if (data.restaurant() == null) {

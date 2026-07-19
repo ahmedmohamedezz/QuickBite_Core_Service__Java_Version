@@ -52,7 +52,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/restaurant", "/restaurant/*").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/restaurant",
+                                "/restaurant/*",
+                                "/restaurants/*/branches"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 

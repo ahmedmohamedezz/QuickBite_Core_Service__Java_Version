@@ -13,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface RestaurantMapper {
-    @Mapping(target = "owner_id", source = "owner.id")
+    @Mapping(target = "ownerId", source = "owner.id")
     RestaurantDto toDto(RestaurantEntity entity);
 
     @Mapping(target = "id", ignore = true)

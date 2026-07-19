@@ -1,12 +1,15 @@
 package com.quickbite.core.restaurant.service;
 
+import com.quickbite.core.common.exception.impl.UserUnAuthorizedException;
 import com.quickbite.core.restaurant.domain.RestaurantEntity;
 import com.quickbite.core.restaurant.dto.*;
 import com.quickbite.core.restaurant.enums.RestaurantStatus;
 import com.quickbite.core.restaurant.exception.RestaurantNotFoundException;
 import com.quickbite.core.restaurant.mapper.RestaurantMapper;
 import com.quickbite.core.restaurant.repository.RestaurantRepository;
+import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.dto.UserDto;
+import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,26 +80,41 @@ public class RestaurantService {
     }
 
     @Transactional
-    public RestaurantResponse update(Long restaurantId, RestaurantUpdateDto dto) {
-        RestaurantEntity entity = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
-        restaurantMapper.updateEntityFromDto(dto, entity);
-        entity = restaurantRepository.save(entity);
+    public RestaurantResponse update(Long userId, Long restaurantId, RestaurantUpdateDto dto) {
+        RestaurantEntity restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
+
+        // validate user is restaurant owner, if not system_admin
+        UserDto user = userService.getByUserId(userId);
+        if (user.systemRole().equals(SystemRole.restaurant_user) && !restaurant.getOwner().getId().equals(user.id())) {
+            throw new UserUnAuthorizedException();
+        }
+
+        restaurantMapper.updateEntityFromDto(dto, restaurant);
+        restaurant = restaurantRepository.save(restaurant);
 
         return RestaurantResponse.builder()
                 .message("Restaurant Updated")
-                .restaurant(restaurantMapper.toDto(entity))
+                .restaurant(restaurantMapper.toDto(restaurant))
                 .build();
     }
 
+    @Transactional
     public RestaurantResponse adminUpdate(Long restaurantId, RestaurantAdminUpdateDto dto) {
         RestaurantEntity entity = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
-        entity.setStatus(dto.status());
-        entity.setStatusUpdatedAt(LocalDateTime.now());
+
+        if (dto.status() != null) {
+            entity.setStatus(dto.status());
+            entity.setStatusUpdatedAt(LocalDateTime.now());
+        }
 
         restaurantRepository.save(entity);
         return RestaurantResponse.builder()
                 .message("Restaurant Updated")
                 .restaurant(restaurantMapper.toDto(entity))
                 .build();
+    }
+
+    public RestaurantEntity getProxy(Long id) {
+        return restaurantRepository.getReferenceById(id);
     }
 }

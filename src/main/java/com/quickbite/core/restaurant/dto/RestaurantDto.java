@@ -11,7 +11,7 @@ public record RestaurantDto(
         String name,
         String logoURL,
         String primaryCountry,
-        Long owner_id,
+        Long ownerId,
         RestaurantStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

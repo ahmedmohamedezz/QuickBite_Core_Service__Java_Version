@@ -1,12 +1,13 @@
 package com.quickbite.core.restaurant.controller;
 
+import com.quickbite.core.common.security.UserPrincipal;
 import com.quickbite.core.restaurant.dto.*;
-import com.quickbite.core.restaurant.enums.RestaurantStatus;
 import com.quickbite.core.restaurant.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,9 +37,12 @@ public class RestaurantController {
 
     @PatchMapping("/{restaurantId}")
     @PreAuthorize("hasAnyRole('system_admin', 'restaurant_user')")
-    public ResponseEntity<RestaurantResponse> update(@PathVariable("restaurantId") Long id,
-                                   @RequestBody RestaurantUpdateDto dto) {
-        RestaurantResponse response = restaurantService.update(id, dto);
+    public ResponseEntity<RestaurantResponse> update(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable("restaurantId") Long restaurantId,
+            @RequestBody RestaurantUpdateDto dto
+    ) {
+        RestaurantResponse response = restaurantService.update(principal.getId(), restaurantId, dto);
         return ResponseEntity.ok(response);
     }
 

@@ -2,6 +2,7 @@ package com.quickbite.core.common.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,12 @@ public class GlobalExceptionHandler {
         return buildResponse(message, HttpStatus.BAD_REQUEST, String.valueOf(ex));
     }
 
-    // Thrown by @preAuthorize
+    // Thrown when required query params are missing
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    private ResponseEntity<ErrorResponse> handleAccessDeniedException(MissingServletRequestParameterException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, "Missing Required Parameter");
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     private ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.FORBIDDEN, "You are not authorized to perform this action.");
