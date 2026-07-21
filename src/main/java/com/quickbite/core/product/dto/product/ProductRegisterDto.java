@@ -1,12 +1,10 @@
-package com.quickbite.core.product.dto;
+package com.quickbite.core.product.dto.product;
 
 import com.quickbite.core.product.domain.ProductCategoryEntity;
 import com.quickbite.core.restaurant.domain.RestaurantEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.jspecify.annotations.NonNull;
-
-import java.time.LocalDateTime;
 
 public record ProductRegisterDto(
         @Size(min = 2)

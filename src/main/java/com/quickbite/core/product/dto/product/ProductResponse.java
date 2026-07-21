@@ -1,7 +1,6 @@
-package com.quickbite.core.product.dto;
+package com.quickbite.core.product.dto.product;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.quickbite.core.user.dto.UserDto;
 import lombok.Builder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -55,7 +55,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/restaurant",
                                 "/restaurant/*",
-                                "/restaurants/*/branches"
+                                "/restaurants/*/branches",
+                                "/restaurants/*/categories"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
