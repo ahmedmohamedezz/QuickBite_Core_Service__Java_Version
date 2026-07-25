@@ -1,8 +1,8 @@
-package com.quickbite.core.retstaurant_branches.mapper;
+package com.quickbite.core.branch.mapper;
 
-import com.quickbite.core.retstaurant_branches.domain.BranchEntity;
-import com.quickbite.core.retstaurant_branches.dto.BranchDto;
-import com.quickbite.core.retstaurant_branches.dto.BranchUpdateDto;
+import com.quickbite.core.branch.domain.BranchEntity;
+import com.quickbite.core.branch.dto.BranchDto;
+import com.quickbite.core.branch.dto.BranchUpdateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

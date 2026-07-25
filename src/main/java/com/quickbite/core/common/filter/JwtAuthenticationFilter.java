@@ -11,12 +11,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -30,6 +32,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final AppConfig appConfig;
     private final UserDetailsService userDetailsService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+//    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+//
+//    private static final List<String> EXCLUDED_PATHS = List.of(
+//            "/auth/**",
+//            "/health/**",
+//            "/restaurant",
+//            "/restaurant/*",
+//            "/restaurants/*/branches",
+//            "/restaurants/*/categories",
+//            "/branches/*/products",
+//            "/products/*"
+//    );
 
     public JwtAuthenticationFilter(AuthUtils authUtils, AppConfig appConfig, UserDetailsService userDetailsService) {
         this.authUtils = authUtils;
@@ -86,6 +100,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
+
         return path.startsWith("/auth") || path.startsWith("/health");
+//        return EXCLUDED_PATHS.stream()
+//                .anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 }

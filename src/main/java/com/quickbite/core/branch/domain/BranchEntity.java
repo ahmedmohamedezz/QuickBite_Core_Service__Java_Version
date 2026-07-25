@@ -1,4 +1,4 @@
-package com.quickbite.core.retstaurant_branches.domain;
+package com.quickbite.core.branch.domain;
 
 import com.quickbite.core.common.enums.Currency;
 import com.quickbite.core.restaurant.domain.RestaurantEntity;

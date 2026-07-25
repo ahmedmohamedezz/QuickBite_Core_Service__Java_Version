@@ -1,4 +1,4 @@
-package com.quickbite.core.retstaurant_branches.dto;
+package com.quickbite.core.branch.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.quickbite.core.common.enums.Currency;

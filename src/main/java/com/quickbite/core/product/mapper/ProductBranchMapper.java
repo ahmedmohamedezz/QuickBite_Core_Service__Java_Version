@@ -1,5 +1,6 @@
 package com.quickbite.core.product.mapper;
 
+import com.quickbite.core.product.domain.ProductBranchDetailsEntity;
 import com.quickbite.core.product.domain.ProductEntity;
 import com.quickbite.core.product.dto.product.ProductDto;
 import com.quickbite.core.product.dto.product.ProductUpdateDto;
@@ -12,14 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
-public interface ProductMapper {
-    @Mapping(target = "restaurantId", source = "restaurant.id")
-    @Mapping(target = "categoryId", source = "category.id")
-    ProductDto toDto(ProductEntity entity);
-
-    @Mapping(target = "id", ignore = true)
-    ProductEntity toEntity(ProductDto productDto);
-
+public interface ProductBranchMapper {
     void updateEntityFromDto(ProductUpdateDto productDto,
-                             @MappingTarget ProductEntity productEntity);
+                             @MappingTarget ProductBranchDetailsEntity productBranchDetailsEntity);
 }

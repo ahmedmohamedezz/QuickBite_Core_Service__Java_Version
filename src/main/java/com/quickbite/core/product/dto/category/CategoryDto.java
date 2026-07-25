@@ -10,7 +10,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record CategoryDto(
         Long id,
-        RestaurantDto restaurant,
+        Long restaurantId,
         String name,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

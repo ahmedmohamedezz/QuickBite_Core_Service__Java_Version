@@ -1,8 +1,9 @@
-package com.quickbite.core.retstaurant_branches.controller;
+package com.quickbite.core.branch.controller;
 
+import com.quickbite.core.branch.dto.*;
 import com.quickbite.core.common.security.UserPrincipal;
-import com.quickbite.core.retstaurant_branches.dto.*;
-import com.quickbite.core.retstaurant_branches.service.BranchService;
+import com.quickbite.core.branch.dto.*;
+import com.quickbite.core.branch.service.BranchService;
 import com.quickbite.core.user.enums.SystemRole;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

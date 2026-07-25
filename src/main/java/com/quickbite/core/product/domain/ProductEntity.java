@@ -43,7 +43,7 @@ public class ProductEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "fk_products_category_id"))
-    private ProductCategoryEntity category;
+    private CategoryEntity category;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

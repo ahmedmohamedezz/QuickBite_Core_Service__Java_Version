@@ -117,4 +117,14 @@ public class RestaurantService {
     public RestaurantEntity getProxy(Long id) {
         return restaurantRepository.getReferenceById(id);
     }
+
+    @Transactional(readOnly = true)
+    public RestaurantDto findByOwnerId(Long userId) {
+        RestaurantEntity restaurant = restaurantRepository.findByOwnerId(userId);
+        return restaurantMapper.toDto(restaurant);
+    }
+
+    public boolean existsById(Long restaurantId) {
+        return restaurantRepository.existsById(restaurantId);
+    }
 }

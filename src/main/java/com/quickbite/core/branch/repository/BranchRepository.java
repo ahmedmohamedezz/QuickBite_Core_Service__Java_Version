@@ -1,8 +1,7 @@
-package com.quickbite.core.retstaurant_branches.repository;
+package com.quickbite.core.branch.repository;
 
-import com.quickbite.core.retstaurant_branches.domain.BranchEntity;
-import com.quickbite.core.retstaurant_branches.dto.BranchDto;
-import com.quickbite.core.retstaurant_branches.dto.NearbyBranchProjection;
+import com.quickbite.core.branch.domain.BranchEntity;
+import com.quickbite.core.branch.dto.NearbyBranchProjection;
 import com.quickbite.core.user.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +14,7 @@ import java.util.List;
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
     @Query(value = """
-              SELECT 
+              SELECT
                 b.id,
                 b.restaurant_id AS restaurantId,
                 b.address_text AS addressText,
@@ -27,9 +26,9 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
                 b.currency,
                 r.name,
                 r.logo_url AS logoUrl
-              FROM restaurant_branches b 
+              FROM restaurant_branches b
               JOIN restaurants r ON b.restaurant_id = r.id
-              WHERE b.is_active = true 
+              WHERE b.is_active = true
                 AND r.status = 'active'
                 AND ST_DWithin(b.location, ST_MakePoint(:lng, :lat)::geography, b.delivery_radius * 1000)
             """, nativeQuery = true)

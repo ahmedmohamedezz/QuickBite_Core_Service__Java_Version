@@ -56,7 +56,9 @@ public class SecurityConfig {
                                 "/restaurant",
                                 "/restaurant/*",
                                 "/restaurants/*/branches",
-                                "/restaurants/*/categories"
+                                "/restaurants/*/categories",
+                                "/branches/*/products",
+                                "/products/*"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -1,4 +1,5 @@
 package com.quickbite.core.product.domain;
+
 import com.quickbite.core.restaurant.domain.RestaurantEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,7 +23,7 @@ import java.util.List;
 @Builder
 @Setter
 @Getter
-public class ProductCategoryEntity {
+public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,4 +45,12 @@ public class ProductCategoryEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<ProductEntity> products;
+
+    @PrePersist
+    @PreUpdate
+    private void normalizeName() {
+        if (this.name != null) {
+            this.name = this.name.trim().toLowerCase();
+        }
+    }
 }

@@ -1,6 +1,6 @@
 package com.quickbite.core.product.domain;
 
-import com.quickbite.core.retstaurant_branches.domain.BranchEntity;
+import com.quickbite.core.branch.domain.BranchEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

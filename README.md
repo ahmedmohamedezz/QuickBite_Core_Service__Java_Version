@@ -189,3 +189,34 @@ public void forgetPassword(ForgetPasswordDto data) {
   }
 }
 ```
+
+- Using the right tools for the job (PG Geo-location support)
+
+- utilize `GIST` index, `geography`, and `point` data types in PG to get the best performance
+  and support for location processing
+
+```java
+@Query(value = """
+              SELECT
+                b.id,
+                b.restaurant_id AS restaurantId,
+                b.address_text AS addressText,
+                b.label,
+                b.lat,
+                b.lng,
+                b.is_active AS isActive,
+                b.accept_orders AS acceptOrders,
+                b.currency,
+                r.name,
+                r.logo_url AS logoUrl
+              FROM restaurant_branches b
+              JOIN restaurants r ON b.restaurant_id = r.id
+              WHERE b.is_active = true
+                AND r.status = 'active'
+                AND ST_DWithin(b.location, ST_MakePoint(:lng, :lat)::geography, b.delivery_radius * 1000)
+            """, nativeQuery = true)
+    List<NearbyBranchProjection> findNearbyBranches(
+            @Param("lat") BigDecimal lat,
+            @Param("lng") BigDecimal lng
+    );
+```

@@ -1,13 +1,14 @@
-package com.quickbite.core.retstaurant_branches.service;
+package com.quickbite.core.branch.service;
 
+import com.quickbite.core.branch.dto.*;
 import com.quickbite.core.common.exception.impl.UserUnAuthorizedException;
 import com.quickbite.core.restaurant.dto.RestaurantDto;
 import com.quickbite.core.restaurant.service.RestaurantService;
-import com.quickbite.core.retstaurant_branches.domain.BranchEntity;
-import com.quickbite.core.retstaurant_branches.dto.*;
-import com.quickbite.core.retstaurant_branches.exception.BranchNotFoundException;
-import com.quickbite.core.retstaurant_branches.mapper.BranchMapper;
-import com.quickbite.core.retstaurant_branches.repository.BranchRepository;
+import com.quickbite.core.branch.domain.BranchEntity;
+import com.quickbite.core.branch.dto.*;
+import com.quickbite.core.branch.exception.BranchNotFoundException;
+import com.quickbite.core.branch.mapper.BranchMapper;
+import com.quickbite.core.branch.repository.BranchRepository;
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.enums.SystemRole;
 import jakarta.validation.Valid;

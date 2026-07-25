@@ -1,8 +1,7 @@
 package com.quickbite.core.product.dto.product;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.quickbite.core.product.domain.ProductCategoryEntity;
-import com.quickbite.core.restaurant.domain.RestaurantEntity;
+import com.quickbite.core.product.dto.category.CategoryDto;
 
 import java.time.LocalDateTime;
 
@@ -12,8 +11,8 @@ public record ProductDto(
         String name,
         String description,
         String imageUrl,
-        RestaurantEntity restaurant,
-        ProductCategoryEntity category,
+        Long restaurantId,
+        Long categoryId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

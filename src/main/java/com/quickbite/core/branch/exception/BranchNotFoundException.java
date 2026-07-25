@@ -1,4 +1,4 @@
-package com.quickbite.core.retstaurant_branches.exception;
+package com.quickbite.core.branch.exception;
 
 import com.quickbite.core.common.exception.BaseException;
 import org.springframework.http.HttpStatus;
