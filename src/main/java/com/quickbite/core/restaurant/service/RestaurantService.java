@@ -7,7 +7,6 @@ import com.quickbite.core.restaurant.enums.RestaurantStatus;
 import com.quickbite.core.restaurant.exception.RestaurantNotFoundException;
 import com.quickbite.core.restaurant.mapper.RestaurantMapper;
 import com.quickbite.core.restaurant.repository.RestaurantRepository;
-import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.service.UserService;
@@ -16,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,7 +81,7 @@ public class RestaurantService {
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId).orElseThrow(RestaurantNotFoundException::new);
 
         // validate user is restaurant owner, if not system_admin
-        UserDto user = userService.getByUserId(userId);
+        UserDto user = userService.findById(userId);
         if (user.systemRole().equals(SystemRole.restaurant_user) && !restaurant.getOwner().getId().equals(user.id())) {
             throw new UserUnAuthorizedException();
         }

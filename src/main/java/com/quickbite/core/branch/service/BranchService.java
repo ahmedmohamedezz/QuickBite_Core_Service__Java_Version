@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -115,5 +116,18 @@ public class BranchService {
                 .message("Branch updated")
                 .branch(branchMapper.toDto(entity))
                 .build();
+    }
+
+    public BranchEntity getBranchProxy(Long branchId) {
+        return branchRepository.getReferenceById(branchId);
+    }
+
+    public boolean checkBranchesExistInRestaurant(Long restaurantId, Set<Long> branchIds) {
+        if (branchIds == null || branchIds.isEmpty()) {
+            return false;
+        }
+
+        return branchRepository.checkBranchesExistInRestaurant(restaurantId,
+                (long) branchIds.size(), branchIds);
     }
 }

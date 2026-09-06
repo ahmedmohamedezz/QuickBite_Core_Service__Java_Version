@@ -85,4 +85,9 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .body(new ApiResponse("Success"));
     }
+
+    @PostMapping("/accept-invite")
+    public ResponseEntity<AuthResponse> acceptMemberInvite(@Valid @RequestBody ResetPasswordDto request) {
+        return  ResponseEntity.ok(authService.acceptInvite(request));
+    }
 }

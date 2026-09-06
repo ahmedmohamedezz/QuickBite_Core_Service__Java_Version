@@ -1,9 +1,12 @@
 package com.quickbite.core.common.config;
 
+import com.quickbite.core.auth.dto.JwtPayload;
 import com.quickbite.core.common.filter.JwtAuthenticationFilter;
+import com.quickbite.core.common.security.JwtService;
 import com.quickbite.core.common.security.UserPrincipal;
-import com.quickbite.core.user.domain.UserEntity;
-import com.quickbite.core.user.repository.UserRepository;
+import com.quickbite.core.user.dto.UserDto;
+import com.quickbite.core.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,29 +20,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.security.SecureRandom;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // activates @PreAuthorize
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserRepository userRepository;
-    private final AppConfig appConfig;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public SecurityConfig(
-            UserRepository userRepository,
-            AppConfig appConfig
-    ) {
-        this.userRepository = userRepository;
-        this.appConfig = appConfig;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
@@ -58,7 +52,8 @@ public class SecurityConfig {
                                 "/restaurants/*/branches",
                                 "/restaurants/*/categories",
                                 "/branches/*/products",
-                                "/products/*"
+                                "/products/*",
+                                "/roles/*/permissions"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -71,34 +66,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(appConfig.passwordEncoder().salt());
-    }
-
-    @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            UserEntity user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            UserDto user = userService.findByEmail(username);
 
-            return new UserPrincipal(user);
+            JwtPayload payload = jwtService.buildJwtPayload(user);
+            return new UserPrincipal(payload);
         };
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public SecureRandom secureRandom() {
-        return new SecureRandom();
     }
 }

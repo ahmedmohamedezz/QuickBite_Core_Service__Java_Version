@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 
 public class UserUnAuthorizedException extends BaseException {
     public UserUnAuthorizedException() {
-        super("User Not Authorized", HttpStatus.UNAUTHORIZED);
+        super("User Not Authorized", HttpStatus.FORBIDDEN);
     }
 }

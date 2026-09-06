@@ -13,6 +13,7 @@ public record UserDto(
         String email,
         String phone,
         String name,
+        String passwordHash,
         SystemRole systemRole,
         LocalDateTime createdAt
 ) {

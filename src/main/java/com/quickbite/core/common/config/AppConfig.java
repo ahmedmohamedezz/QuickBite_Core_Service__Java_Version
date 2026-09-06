@@ -13,7 +13,8 @@ public record AppConfig(
         DbConfig db,
         JwtConfig jwt,
         PasswordEncoder passwordEncoder,
-        Cookies cookies
+        Cookies cookies,
+        Permissions permissions
 ) {
     public record DbConfig(
             String host,
@@ -43,5 +44,10 @@ public record AppConfig(
     public record Cookies (
             String accessTokenName,
             String refreshTokenName
+    ) {}
+
+    public record Permissions (
+            // ttl in ms
+            Long TTL
     ) {}
 }

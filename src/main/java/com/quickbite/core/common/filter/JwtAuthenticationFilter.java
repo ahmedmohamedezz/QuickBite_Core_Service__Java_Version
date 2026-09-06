@@ -1,17 +1,17 @@
 package com.quickbite.core.common.filter;
 
 import com.quickbite.core.auth.dto.JwtPayload;
-import com.quickbite.core.auth.utils.AuthUtils;
 import com.quickbite.core.common.config.AppConfig;
+import com.quickbite.core.common.security.JwtService;
 import com.quickbite.core.common.security.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,30 +26,14 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final AuthUtils authUtils;
+    private final JwtService jwtService;
     private final AppConfig appConfig;
     private final UserDetailsService userDetailsService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-//    private final AntPathMatcher pathMatcher = new AntPathMatcher();
-//
-//    private static final List<String> EXCLUDED_PATHS = List.of(
-//            "/auth/**",
-//            "/health/**",
-//            "/restaurant",
-//            "/restaurant/*",
-//            "/restaurants/*/branches",
-//            "/restaurants/*/categories",
-//            "/branches/*/products",
-//            "/products/*"
-//    );
-
-    public JwtAuthenticationFilter(AuthUtils authUtils, AppConfig appConfig, UserDetailsService userDetailsService) {
-        this.authUtils = authUtils;
-        this.appConfig = appConfig;
-        this.userDetailsService = userDetailsService;
-    }
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -66,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             logger.info("Auth header found, validating request.");
 
-            JwtPayload payload = authUtils.verifyAccessToken(accessToken);
+            JwtPayload payload = jwtService.verifyAccessToken(accessToken);
 
             if (payload != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String role = payload.role();
@@ -101,8 +85,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
 
-        return path.startsWith("/auth") || path.startsWith("/health");
-//        return EXCLUDED_PATHS.stream()
-//                .anyMatch(pattern -> pathMatcher.match(pattern, path));
+        return path.startsWith("/auth") ||
+                path.startsWith("/health") ||
+                pathMatcher.match("/roles/*/permissions", path);
     }
 }

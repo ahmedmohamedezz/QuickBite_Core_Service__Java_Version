@@ -21,7 +21,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMe(@AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.ok(userService.getByUserId(principal.getId()));
+        return ResponseEntity.ok(userService.findById(principal.getId()));
     }
 
     @PatchMapping("/me")

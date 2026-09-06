@@ -2,6 +2,8 @@ package com.quickbite.core.user.service;
 
 import com.quickbite.core.auth.dto.RestaurantOwnerDto;
 import com.quickbite.core.auth.dto.UserRegisterDto;
+import com.quickbite.core.auth.exception.UserAlreadyExistsException;
+import com.quickbite.core.auth.utils.AuthUtils;
 import com.quickbite.core.user.domain.UserEntity;
 import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.dto.UserResponse;
@@ -20,11 +22,42 @@ import java.util.Map;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final AuthUtils authUtils;
+
+    public UserDto create(UserRegisterDto data) {
+        if (userRepository.existsByEmail(data.email())) {
+            throw new UserAlreadyExistsException();
+        }
+
+        if (userRepository.existsByPhone(data.phone())) {
+            throw new UserAlreadyExistsException();
+        }
+
+        // Build and hash user credentials
+        UserEntity userEntity = UserEntity.builder()
+                .email(data.email())
+                .phone(data.phone())
+                .name(data.name())
+                .systemRole(data.role())
+                .passwordHash(authUtils.hashPassword(data.password()))
+                .build();
+
+        UserEntity savedUser = userRepository.save(userEntity);
+        return userMapper.toDto(savedUser);
+    }
 
     @Transactional(readOnly = true)
-    public UserDto getByUserId(Long userId) {
+    public UserDto findById(Long userId) {
         UserEntity user =
                 userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        return userMapper.toDto(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto findByEmail(String email) {
+        UserEntity user =
+                userRepository.findActiveByEmail(email).orElseThrow(UserNotFoundException::new);
 
         return userMapper.toDto(user);
     }
@@ -62,5 +95,15 @@ public class UserService {
 
         UserEntity savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Transactional
+    public void updatePassword(Long userId, String passwordHash) {
+        userRepository.updatePassword(userId, passwordHash);
     }
 }

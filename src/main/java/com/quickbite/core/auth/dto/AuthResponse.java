@@ -14,4 +14,11 @@ public record AuthResponse(
         UserDto user,
         RestaurantDto restaurant
 ) {
+    // secondary constructor without restaurant info
+    public AuthResponse(String message,
+                        String accessToken,
+                        String refreshToken,
+                        UserDto user) {
+        this(message, accessToken, refreshToken, user, null);
+    }
 }

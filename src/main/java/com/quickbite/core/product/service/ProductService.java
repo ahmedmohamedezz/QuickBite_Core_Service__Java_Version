@@ -72,7 +72,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Map<String, List<ProductDto>> findByRestaurant(Long userId, Long restaurantId) {
-        UserDto user = userService.getByUserId(userId);
+        UserDto user = userService.findById(userId);
         RestaurantDto restaurant = restaurantService.findById(restaurantId);
 
         // neither a system admin, nor the restaurant owner
@@ -96,7 +96,7 @@ public class ProductService {
 
     @Transactional
     public ProductResponse create(Long userId, Long restaurantId, ProductRegisterDto product) {
-        UserDto user = userService.getByUserId(userId);
+        UserDto user = userService.findById(userId);
         RestaurantDto restaurant = restaurantService.findById(restaurantId);
         ProductEntity newProduct = ProductEntity.builder()
                 .name(product.name())
@@ -140,7 +140,7 @@ public class ProductService {
             ProductUpdateDto productDto,
             Long branchId   // optional
     ) {
-        UserDto user = userService.getByUserId(userId);
+        UserDto user = userService.findById(userId);
         ProductEntity productEntity = productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundException::new);
 

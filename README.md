@@ -220,3 +220,41 @@ public void forgetPassword(ForgetPasswordDto data) {
             @Param("lng") BigDecimal lng
     );
 ```
+
+- Since RBAC information are needed frequently to verify many requests, we fetch them once, then 
+  cache them (starting with **server cache**, and extending to using **redis** if needed) 
+
+```java
+public List<String> getPermissions(String roleName) {
+    PermissionCacheInfo cached = cache.getOrDefault(roleName, null);
+
+    boolean expired = (
+            cached != null && cached.cachedAt() != null && 
+            cached.cachedAt().plus(TTL, ChronoUnit.MILLIS).isBefore(LocalDateTime.now())
+    );
+
+    if (cached == null || expired) {
+        List<String> permissions = permissionService.getPermissionsByRoleName(roleName);
+        cached = new PermissionCacheInfo(permissions, LocalDateTime.now());
+        cache.put(roleName, cached);
+    }
+
+    return cache.get(roleName).permissions();
+}
+```
+
+- Using custom annotations to implement RBAC interceptors, checking ownerships, ...etc
+
+```java
+@PostMapping("/restaurants/{restaurantId}/members")
+@PreAuthorize("hasAnyRole('system_admin', 'restaurant_user')")
+@RequireRestaurantMember
+@CheckPermission(resource = "core:member", action = "create")
+public ResponseEntity<RestaurantMemberDto> createMember(
+        @RequestBody RestaurantMemberCreateDto body,
+        @PathVariable("restaurantId") Long restaurantId
+) {
+    RestaurantMemberDto result = memberService.createMember(restaurantId, body);
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
+}
+```

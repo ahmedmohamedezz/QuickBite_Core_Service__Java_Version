@@ -30,4 +30,8 @@ public record UserRegisterDto(
         @Valid
         RestaurantRegisterDto restaurant
 ) {
+    // secondary constructor without restaurant info
+    public UserRegisterDto(String name, String phone, String email, String password, SystemRole role) {
+        this(name, phone, email, password, role, null);
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
@@ -48,4 +49,11 @@ public interface BranchRepository extends JpaRepository<BranchEntity, Long> {
                     )
             """, nativeQuery = true)
     UserEntity getOwner(Long branchId);
+
+    @Query(value = """
+        SELECT COUNT(b) = :targetCount
+        FROM BranchEntity b
+        WHERE b.restaurant.id = :restaurantId AND b.id IN :branchIds
+    """)
+    boolean checkBranchesExistInRestaurant(Long restaurantId, Long targetCount, Set<Long> branchIds);
 }

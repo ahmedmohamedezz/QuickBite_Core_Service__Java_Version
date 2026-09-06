@@ -45,7 +45,7 @@ public class RestaurantMemberEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
