@@ -2,12 +2,11 @@ package com.quickbite.core.rbac.service;
 
 import com.quickbite.core.auth.dto.UserRegisterDto;
 import com.quickbite.core.auth.exception.UserAlreadyExistsException;
-import com.quickbite.core.auth.service.AuthService;
 import com.quickbite.core.auth.service.PasswordResetService;
 import com.quickbite.core.auth.utils.AuthUtils;
 import com.quickbite.core.branch.exception.BranchNotFoundException;
 import com.quickbite.core.branch.service.BranchService;
-import com.quickbite.core.common.mail.EmailService;
+import com.quickbite.core.pkg.mail.EmailService;
 import com.quickbite.core.rbac.domain.MemberBranchEntity;
 import com.quickbite.core.rbac.domain.BranchMemberId;
 import com.quickbite.core.rbac.domain.RestaurantMemberEntity;
@@ -31,9 +30,7 @@ import com.quickbite.core.restaurant.service.RestaurantService;
 import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

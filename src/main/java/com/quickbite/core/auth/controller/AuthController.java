@@ -65,25 +65,25 @@ public class AuthController {
     }
 
     @PostMapping("/forget-password")
-    public ResponseEntity<ApiResponse> forgetPassword(@Valid @RequestBody ForgetPasswordDto request) {
+    public ResponseEntity<ApiResponse<String>> forgetPassword(@Valid @RequestBody ForgetPasswordDto request) {
         authService.forgetPassword(request);
-        return ResponseEntity.ok(new ApiResponse("Email Sent with OTP"));
+        return ResponseEntity.ok(ApiResponse.sendSuccess("Email Sent with OTP"));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse> resetPassword(@Valid @RequestBody ResetPasswordDto request) {
+    public ResponseEntity<ApiResponse<String>> resetPassword(@Valid @RequestBody ResetPasswordDto request) {
         authService.resetPassword(request);
-        return ResponseEntity.ok(new ApiResponse("Password reset successfully, please login again"));
+        return ResponseEntity.ok(ApiResponse.sendSuccess("Password reset successfully, please login again"));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse> refreshToken(@CookieValue(name = "refreshToken") String refreshToken) {
+    public ResponseEntity<ApiResponse<String>> refreshToken(@CookieValue(name = "refreshToken") String refreshToken) {
         String newAccessToken = authService.refreshToken(refreshToken);
 
         ResponseCookie accessTokenCookie = authCookieUtils.createAccessTokenCookie(newAccessToken);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                .body(new ApiResponse("Success"));
+                .body(ApiResponse.sendSuccess("Success"));
     }
 
     @PostMapping("/accept-invite")

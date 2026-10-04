@@ -1,4 +1,4 @@
-package com.quickbite.core.common.mail;
+package com.quickbite.core.pkg.mail;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

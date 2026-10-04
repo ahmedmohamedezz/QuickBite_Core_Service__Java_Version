@@ -7,7 +7,7 @@ import com.quickbite.core.auth.exception.CannotSignupAsSystemAdminException;
 import com.quickbite.core.auth.exception.InvalidOTPException;
 import com.quickbite.core.auth.exception.InvalidCredentialsException;
 import com.quickbite.core.auth.repository.PasswordResetRepository;
-import com.quickbite.core.common.mail.EmailService;
+import com.quickbite.core.pkg.mail.EmailService;
 import com.quickbite.core.common.security.JwtService;
 import com.quickbite.core.rbac.service.MemberService;
 import com.quickbite.core.restaurant.dto.RestaurantDto;
@@ -20,9 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
