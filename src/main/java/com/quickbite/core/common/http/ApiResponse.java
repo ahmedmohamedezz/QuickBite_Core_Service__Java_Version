@@ -1,4 +1,4 @@
-package com.quickbite.core.common.dto;
+package com.quickbite.core.common.http;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

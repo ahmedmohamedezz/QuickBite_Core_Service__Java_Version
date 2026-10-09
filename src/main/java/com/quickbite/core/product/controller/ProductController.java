@@ -1,5 +1,6 @@
 package com.quickbite.core.product.controller;
 
+import com.quickbite.core.common.http.ApiResponse;
 import com.quickbite.core.common.security.UserPrincipal;
 import com.quickbite.core.product.dto.BranchProductDetailsProjection;
 import com.quickbite.core.product.dto.category.CategoryDto;
@@ -27,44 +28,43 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/restaurants/{restaurantId}/categories")
-    public ResponseEntity<Map<String, List<CategoryDto>>> findCategories(@PathVariable(
-            "restaurantId") Long restaurantId) {
-        return ResponseEntity.ok(productService.findCategories(restaurantId));
+    public ResponseEntity<ApiResponse<Map<String, List<CategoryDto>>>> findCategories(@PathVariable("restaurantId") Long restaurantId) {
+        return ResponseEntity.ok(ApiResponse.sendSuccess(productService.findCategories(restaurantId)));
     }
 
     @GetMapping("/branches/{branchId}/products")
-    public ResponseEntity<Map<String, List<BranchProductDetailsProjection>>> findByBranch(@PathVariable("branchId") Long branchId) {
-        return ResponseEntity.ok(productService.findByBranch(branchId));
+    public ResponseEntity<ApiResponse<Map<String, List<BranchProductDetailsProjection>>>> findByBranch(@PathVariable("branchId") Long branchId) {
+        return ResponseEntity.ok(ApiResponse.sendSuccess(productService.findByBranch(branchId)));
     }
 
     @GetMapping("/restaurants/{restaurantId}/products")
     @PreAuthorize("hasAnyRole('system_admin', 'restaurant_user')")
-    public ResponseEntity<Map<String, List<ProductDto>>> findByRestaurant(
+    public ResponseEntity<ApiResponse<Map<String, List<ProductDto>>>> findByRestaurant(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("restaurantId") Long restaurantId
     ) {
-        return ResponseEntity.ok(productService.findByRestaurant(principal.getId(), restaurantId));
+        return ResponseEntity.ok(ApiResponse.sendSuccess(productService.findByRestaurant(principal.getId(), restaurantId)));
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductDto> findById(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(productService.findById(id));
+    public ResponseEntity<ApiResponse<ProductDto>> findById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(ApiResponse.sendSuccess(productService.findById(id)));
     }
 
     @PostMapping("/restaurants/{restaurantId}/products")
     @PreAuthorize("hasAnyRole('system_admin', 'restaurant_user')")
-    public ResponseEntity<ProductResponse> create(
+    public ResponseEntity<ApiResponse<ProductResponse>> create(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("restaurantId") Long restaurantId,
             @RequestBody @Valid ProductRegisterDto product
     ) {
         ProductResponse response = productService.create(principal.getId(), restaurantId, product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.sendSuccess(response));
     }
 
     @PatchMapping("/products/{id}")
     @PreAuthorize("hasAnyRole('system_admin', 'restaurant_user')")
-    public ResponseEntity<ProductResponse> update(
+    public ResponseEntity<ApiResponse<ProductResponse>> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("id") Long productId,
             @RequestBody @Valid ProductUpdateDto product,
@@ -77,6 +77,6 @@ public class ProductController {
             response = productService.update(principal.getId(), productId, product, null);
         }
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(response));
     }
 }

@@ -3,7 +3,7 @@ package com.quickbite.core.auth.controller;
 import com.quickbite.core.auth.dto.*;
 import com.quickbite.core.auth.service.AuthService;
 import com.quickbite.core.auth.utils.AuthCookieUtils;
-import com.quickbite.core.common.dto.ApiResponse;
+import com.quickbite.core.common.http.ApiResponse;
 import com.quickbite.core.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/auth")
@@ -28,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterDto request) {
+    public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody UserRegisterDto request) {
         AuthResponse data = authService.register(request);
         UserResponse response = UserResponse.builder()
                 .user(data.user())
@@ -43,11 +42,11 @@ public class AuthController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(response);
+                .body(ApiResponse.sendSuccess(response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody UserLoginDto request) {
+    public ResponseEntity<ApiResponse<UserResponse>> login(@Valid @RequestBody UserLoginDto request) {
         AuthResponse data = authService.login(request);
         UserResponse response = UserResponse.builder()
                 .message(data.message())
@@ -61,7 +60,7 @@ public class AuthController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(response);
+                .body(ApiResponse.sendSuccess(response));
     }
 
     @PostMapping("/forget-password")
@@ -87,7 +86,7 @@ public class AuthController {
     }
 
     @PostMapping("/accept-invite")
-    public ResponseEntity<AuthResponse> acceptMemberInvite(@Valid @RequestBody ResetPasswordDto request) {
-        return  ResponseEntity.ok(authService.acceptInvite(request));
+    public ResponseEntity<ApiResponse<AuthResponse>> acceptMemberInvite(@Valid @RequestBody ResetPasswordDto request) {
+        return ResponseEntity.ok(ApiResponse.sendSuccess(authService.acceptInvite(request)));
     }
 }

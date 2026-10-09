@@ -1,5 +1,6 @@
 package com.quickbite.core.customer_addresses.controller;
 
+import com.quickbite.core.common.http.ApiResponse;
 import com.quickbite.core.common.security.UserPrincipal;
 import com.quickbite.core.customer_addresses.dto.CustomerAddressDto;
 import com.quickbite.core.customer_addresses.dto.CustomerAddressResponse;
@@ -11,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,26 +21,24 @@ public class CustomerAddressesController {
     private final CustomerAddressesService customerAddressesService;
 
     @GetMapping("/addresses")
-    public ResponseEntity<Map<String, List<CustomerAddressDto>>> findAllUserAddresses(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<ApiResponse<List<CustomerAddressDto>>> findAllUserAddresses(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         List<CustomerAddressDto> data = customerAddressesService.findAll(userPrincipal.getId());
-        Map<String, List<CustomerAddressDto>> result = new HashMap<>();
-        result.put("data", data);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(data));
     }
 
     @PostMapping("/addresses")
-    public ResponseEntity<CustomerAddressResponse> addCustomerAddress(
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> addCustomerAddress(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody CustomerAddressDto address
     ) {
         CustomerAddressResponse response =
                 customerAddressesService.addCustomerAddress(userPrincipal.getId(), address);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.sendSuccess(response));
     }
 
     @PatchMapping("/addresses/{addressId}")
-    public ResponseEntity<CustomerAddressResponse> updateCustomerAddress(
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> updateCustomerAddress(
             @PathVariable Long addressId,
             @Valid @RequestBody CustomerAddressDto address,
             @AuthenticationPrincipal UserPrincipal userPrincipal
@@ -49,11 +46,11 @@ public class CustomerAddressesController {
         CustomerAddressResponse response =
                 customerAddressesService.updateCustomerAddress(userPrincipal.getId(), addressId, address);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(response));
     }
 
     @DeleteMapping("/addresses/{addressId}")
-    public ResponseEntity<CustomerAddressResponse> deleteCustomerAddress(
+    public ResponseEntity<ApiResponse<CustomerAddressResponse>> deleteCustomerAddress(
             @PathVariable Long addressId, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         customerAddressesService.deleteCustomerAddress(userPrincipal.getId(), addressId);
 
@@ -61,6 +58,6 @@ public class CustomerAddressesController {
                 .message("Address deleted")
                 .build();
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(response));
     }
 }

@@ -1,5 +1,6 @@
 package com.quickbite.core.user.controller;
 
+import com.quickbite.core.common.http.ApiResponse;
 import com.quickbite.core.common.security.UserPrincipal;
 import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.dto.UserResponse;
@@ -20,15 +21,15 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getMe(@AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.ok(userService.findById(principal.getId()));
+    public ResponseEntity<ApiResponse<UserDto>> getMe(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(ApiResponse.sendSuccess(userService.findById(principal.getId())));
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<UserResponse> updateMe(@AuthenticationPrincipal UserPrincipal principal
+    public ResponseEntity<ApiResponse<UserResponse>> updateMe(@AuthenticationPrincipal UserPrincipal principal
             , @RequestBody Map<String, String> updateData) {
 
         UserResponse response = userService.update(principal.getId(), updateData);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(response));
     }
 }

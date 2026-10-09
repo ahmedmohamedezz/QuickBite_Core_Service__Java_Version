@@ -1,9 +1,9 @@
 package com.quickbite.core.branch.controller;
 
 import com.quickbite.core.branch.dto.*;
-import com.quickbite.core.common.security.UserPrincipal;
-import com.quickbite.core.branch.dto.*;
 import com.quickbite.core.branch.service.BranchService;
+import com.quickbite.core.common.http.ApiResponse;
+import com.quickbite.core.common.security.UserPrincipal;
 import com.quickbite.core.user.enums.SystemRole;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,25 +26,25 @@ public class BranchController {
     private final BranchService branchService;
 
     @GetMapping("/branches/nearby")
-    public ResponseEntity<List<NearbyBranchProjection>> findNearby(
+    public ResponseEntity<ApiResponse<List<NearbyBranchProjection>>> findNearby(
             @RequestParam("lat") BigDecimal lat,
             @RequestParam("lng") BigDecimal lng
     ) {
         List<NearbyBranchProjection> result = branchService.findNearby(lat, lng);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(result));
     }
 
     @GetMapping("/restaurants/{restaurantId}/branches")
-    public ResponseEntity<Map<String, List<BranchDto>>> findBranches(
+    public ResponseEntity<ApiResponse<Map<String, List<BranchDto>>>> findBranches(
             @PathVariable("restaurantId") Long restaurantId
     ) {
         Map<String, List<BranchDto>> result = branchService.findBranches(restaurantId);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(result));
     }
 
     @PostMapping("/restaurants/{restaurantId}/branches")
     @PreAuthorize("hasAnyRole('restaurant_user', 'system_admin')")
-    public ResponseEntity<BranchResponse> create(
+    public ResponseEntity<ApiResponse<BranchResponse>> create(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("restaurantId") Long restaurantId,
             @RequestBody BranchRegisterDto dto
@@ -64,28 +64,27 @@ public class BranchController {
                 dto
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.sendSuccess(result));
     }
 
     @PatchMapping("/branches/{branchId}")
     @PreAuthorize("hasAnyRole('restaurant_user', 'system_admin')")
-    public ResponseEntity<BranchResponse> update(
+    public ResponseEntity<ApiResponse<BranchResponse>> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable("branchId") Long branchId,
             @RequestBody @Valid BranchUpdateDto dto
     ) {
         BranchResponse response = branchService.update(principal.getId(), branchId, dto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(response));
     }
-
 
     @PatchMapping("/branches/{branchId}/status")
     @PreAuthorize("hasRole('system_admin')")
-    public ResponseEntity<BranchResponse> AdminUpdate(
+    public ResponseEntity<ApiResponse<BranchResponse>> AdminUpdate(
             @PathVariable("branchId") Long branchId,
             @RequestBody @Valid BranchAdminUpdateDto dto
     ) {
         BranchResponse response = branchService.adminUpdate(branchId, dto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.sendSuccess(response));
     }
 }
