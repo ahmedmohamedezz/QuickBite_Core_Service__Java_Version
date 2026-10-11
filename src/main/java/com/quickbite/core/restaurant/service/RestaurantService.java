@@ -11,6 +11,7 @@ import com.quickbite.core.user.dto.UserDto;
 import com.quickbite.core.user.enums.SystemRole;
 import com.quickbite.core.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class RestaurantService {
         return restaurantMapper.toDto(saved);
     }
 
+    @Cacheable(value = "restaurants")
     @Transactional(readOnly = true)
     public List<RestaurantDto> findAll() {
         List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();

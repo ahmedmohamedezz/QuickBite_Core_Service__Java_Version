@@ -1,9 +1,6 @@
 package com.quickbite.core.common.config;
 
-import com.quickbite.core.common.interceptor.LoggingInterceptor;
-import com.quickbite.core.common.interceptor.RBACPermissionInterceptor;
-import com.quickbite.core.common.interceptor.RequireBranchAccessInterceptor;
-import com.quickbite.core.common.interceptor.RequireRestaurantMemberInterceptor;
+import com.quickbite.core.common.interceptor.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;

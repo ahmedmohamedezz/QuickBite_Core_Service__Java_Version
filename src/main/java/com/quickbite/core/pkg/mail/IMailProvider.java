@@ -5,7 +5,7 @@ import com.quickbite.core.pkg.mail.dto.MailMessage;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface MailInterface {
+public interface IMailProvider {
     void send(MailMessage message);
 
     CompletableFuture<Void> sendAsync(MailMessage message);
